@@ -1,0 +1,11 @@
+#ifndef PARSER_OPERATOR_VERSION_MAIN_H
+#define PARSER_OPERATOR_VERSION_MAIN_H
+
+
+class main {
+
+};
+
+
+
+#endif //PARSER_OPERATOR_VERSION_MAIN_H
