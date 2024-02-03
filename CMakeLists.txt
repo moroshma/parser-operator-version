@@ -8,4 +8,6 @@ include_directories(.)
 add_executable(parser_operator_version
         main.cpp
         main.hpp
+        type.cpp
+        type.cpp
 )
