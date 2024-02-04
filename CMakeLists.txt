@@ -10,4 +10,6 @@ add_executable(parser_operator_version
         main.hpp
         type.cpp
         type.cpp
+        view.cpp
+        validate_expression.cpp
 )

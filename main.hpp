@@ -8,19 +8,21 @@
 #include <fstream>
 #include <string>
 #include <regex>
+#include <cctype>
 
 enum  Error {
     SUCCESS,
     MALLOC_ERROR,
     INVALID_BRACETS_VISION,
     UNDEFIND_ERROR,
-    INVALID_DEFULT_INITIAL,
     INVALID_VARIBLE_INIT,
     MANY_CONST,
     INITIALIZATION_LIST_ERROR,
-    OPEN_FILE_ERROR
+    OPEN_FILE_ERROR,
+    ARGUMENT_ERROR,
+    OPERATOR_ERROR,
+    TYPE_OPERATION_ERROR
 };
-
 
 
 using namespace std;
@@ -37,20 +39,30 @@ public:
     }
 };
 
+
 class handler_data;
 class variable_types : public base_type{
 private:
     //мапа, где ключ - тип переменной, а значение - вектор имен переменных
     map<string, vector<string>> variable {};
+
 public:
     variable_types(const string& name_file){
         get_type(name_file);
     }
+
+    map<string, vector<string>> & get_variable(){
+        return this -> variable;
+    }
     //добавление переменной в мапу
     void add_variable(const string& type, const string& name);
+
+
 };
 
+
 class handler_data {
+    size_t cur_line = 0;
 public:
     //чтение файла и запись переменных в мапу variable_types
     int read_file(const string &name_file, variable_types &vt);
@@ -60,12 +72,39 @@ public:
     static string trim(const string &str, const string &chars);
     //поиск оператора в строке и обработка корректности выполнения
     void get_oprator(const string &line, variable_types &vt);
-
-    void print_error(const string &line, size_t current_line, Error err);
+    //функция для вывода ошибок
+    void print_error(const string &line,Error err);
+    //помогает определить содержится ли функция в строке или нет
     bool is_function(const string &line);
+    //функция удаления двойных пробелов
     void delete_double_space(string &line);
-
+    //функция замены переменной на ее тип
+    string replase_var_to_type(const string &line, variable_types &vt);
+    //проверка выражений в строке на скобки и правильное расположение операторов
+    void validate_expressions(const string &line, variable_types &vt,const string & type = "");
+    //проверка типа переменной и корректность операций с ними
+    bool validate_type(const string &line, variable_types &vt);
+    //проверка является ли этот тип double
+    bool is_double(const string &type);
+    //проверка на целочисленный
+    bool is_int(const string &type);
+    //Проверка на указатель
+    bool is_pointer(const string &type);
+    //проверка на корректность скобок
+    bool validate_brackets(const string &line);
+    //проверка на валидность операторов
+    bool validate_operator(const string &line);
+    //Увеличение текущей строки на 1
+    void iter_line(){
+        this ->cur_line++;
+    }
+    static bool is_string_in_set(const std::set<std::string>& set, const std::string& str) {
+        return set.find(str) != set.end();
+    }
+    static bool is_string_in_set(const std::set<std::string>& set, const char & ch) {
+        return set.find(string(1, ch)) != set.end();
+    }
+    bool is_type(const char &c);
 };
-
 
 #endif //PARSER_OPERATOR_VERSION_MAIN_H
