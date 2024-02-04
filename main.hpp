@@ -10,6 +10,8 @@
 #include <regex>
 #include <cctype>
 #include <cstring>
+#include <sstream>
+
 
 enum  Error {
     SUCCESS,
@@ -107,6 +109,7 @@ public:
     }
     bool is_type(const char &c);
     void replace_uno_minus(string &line);
+    void add_space(string &line);
 };
 
 #endif //PARSER_OPERATOR_VERSION_MAIN_H

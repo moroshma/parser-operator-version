@@ -1,6 +1,14 @@
 #include "./main.hpp"
+
+
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <vector>
 #include <stack>
 
+
+using namespace std;
 void handler_data::validate_expressions(const string &line, variable_types &vt,
                                         const string &type) {
   string copy_line = line;
@@ -18,7 +26,7 @@ void handler_data::validate_expressions(const string &line, variable_types &vt,
                    expression.end());
   replace_uno_minus(expression);
   expression.erase(remove(expression.begin(), expression.end(), ' '),
-                     expression.end());
+                   expression.end());
   if (!validate_brackets(expression)) {
     print_error(line, Error::INVALID_BRACETS_VISION);
     return;
@@ -37,7 +45,28 @@ void handler_data::validate_expressions(const string &line, variable_types &vt,
 
 bool handler_data::validate_type(const string &line, variable_types &vt) {
 
-  return true;
+  string expression = line;
+  add_space(expression);
+  stack<string> st;
+  /*Источник istringstream представляет собой поток ввода, который считывает
+   * данные из строки string, в отличие от стандартного потока ввода cin.
+   * istringstream позволяет
+   * считывать данные из строки, предоставляя возможность инициализировать
+   * его содержимым нужной строки для разделения на токены*/
+    std::istringstream iss(expression);
+    std::string tk;
+
+    //TODO: написать проверку на унарный и бинарный оператор и доделать польскую нотацию для проверки типов
+    // 1. Проверка на унарный оператор
+    // 2. Проверка на бинарный оператор
+    // 3. Проверка на тип переменной
+    // 4. проверка на правильность операций
+
+    while (iss >> tk) {
+
+    }
+
+    return true;
 }
 
 string handler_data::replase_var_to_type(const string &line,
@@ -144,9 +173,11 @@ bool handler_data::validate_operator(const string &line) {
                                    (temp += line[i], temp += line[i + 1]))) &&
                  (is_type(line[i + 2]) || line[i + 2] == '(')) {
         continue;
-      } else if (i != line.length() - 1 && line[i] == '(' && !is_string_in_set(operators_bin, line[i + 1])) {
+      } else if (i != line.length() - 1 && line[i] == '(' &&
+                 !is_string_in_set(operators_bin, line[i + 1])) {
         continue;
-      } else if (i != 0 && line[i] == ')'&& !is_string_in_set(operators_bin, line[i - 1])) {
+      } else if (i != 0 && line[i] == ')' &&
+                 !is_string_in_set(operators_bin, line[i - 1])) {
         continue;
       } else if (i == line.length() - 1 &&
                  (is_string_in_set(operators_bin, line[i]) ||
@@ -170,18 +201,46 @@ bool handler_data::is_type(const char &c) {
 }
 
 void handler_data::replace_uno_minus(string &line) {
-    std::set<std::string> operators = {"+",  "-",  "*",  "/",  "%",  "&",
-                                           "|",  "^",  "<<", ">>", "&&", "||",
-                                           "==", "!=", "<",  ">",  "<=", ">=", "(", ")", "!", "~"};
-    for (int i = 0; i < line.size(); i++) {
-        if (line[i] == '-' && i == 0) {
-            line[i] = ' ';
-        } else if (i != 0 && line[i] == '-' && is_string_in_set(operators, line[i - 1])) {
-            line[i] = ' ';
-        } else if (line[i] == '+' && i == 0) {
-            line[i] = ' ';
-        } else if (i != 0 && line[i] == ' ' && is_string_in_set(operators, line[i - 1])) {
-            line[i] = ' ';
+  std::set<std::string> operators = {
+      "+",  "-",  "*",  "/", "%", "&",  "|",  "^", "<<", ">>", "&&",
+      "||", "==", "!=", "<", ">", "<=", ">=", "(", ")",  "!",  "~"};
+  for (int i = 0; i < line.size(); i++) {
+    if (line[i] == '-' && i == 0) {
+      line[i] = ' ';
+    } else if (i != 0 && line[i] == '-' &&
+               is_string_in_set(operators, line[i - 1])) {
+      line[i] = ' ';
+    } else if (line[i] == '+' && i == 0) {
+      line[i] = ' ';
+    } else if (i != 0 && line[i] == ' ' &&
+               is_string_in_set(operators, line[i - 1])) {
+      line[i] = ' ';
+    }
+  }
+}
+
+void handler_data::add_space(string &line) {
+    std::set<std::string> token = {
+            "==", "!=", "<=", ">=", "<<", ">>", "&&", "||", "+", "-", "*", "/", "%",
+            "&",  "|",  "^",  "<",  ">",  "(",  ")",  "!",  "~", "i", "d", "p"};
+
+    std::string result;
+    size_t pos = 0;
+    while (pos < line.length()) {
+        bool found = false;
+        for (const std::string &t : token) {
+            if (line.substr(pos, t.length()) == t) {
+                result += line.substr(pos, t.length()) + " ";
+                pos += t.length();
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            result += line[pos];
+            pos++;
         }
     }
+    line = trim(result, " ");
+
 }
