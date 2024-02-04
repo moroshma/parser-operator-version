@@ -9,6 +9,7 @@
 #include <string>
 #include <regex>
 #include <cctype>
+#include <cstring>
 
 enum  Error {
     SUCCESS,
@@ -105,6 +106,7 @@ public:
         return set.find(string(1, ch)) != set.end();
     }
     bool is_type(const char &c);
+    void replace_uno_minus(string &line);
 };
 
 #endif //PARSER_OPERATOR_VERSION_MAIN_H

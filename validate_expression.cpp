@@ -16,15 +16,19 @@ void handler_data::validate_expressions(const string &line, variable_types &vt,
 
   expression.erase(remove(expression.begin(), expression.end(), ' '),
                    expression.end());
-
+  replace_uno_minus(expression);
+  expression.erase(remove(expression.begin(), expression.end(), ' '),
+                     expression.end());
   if (!validate_brackets(expression)) {
     print_error(line, Error::INVALID_BRACETS_VISION);
     return;
   }
+
   if (!validate_operator(expression)) {
-        print_error(line, Error::OPERATOR_ERROR);
-        return;
-    }
+    print_error(line, Error::OPERATOR_ERROR);
+    return;
+  }
+
   if (!validate_type(expression, vt)) {
     print_error(line, Error::TYPE_OPERATION_ERROR);
     return;
@@ -33,7 +37,7 @@ void handler_data::validate_expressions(const string &line, variable_types &vt,
 
 bool handler_data::validate_type(const string &line, variable_types &vt) {
 
-    return true;
+  return true;
 }
 
 string handler_data::replase_var_to_type(const string &line,
@@ -46,8 +50,8 @@ string handler_data::replase_var_to_type(const string &line,
   for (auto first = vt.get_variable().begin(); first != vt.get_variable().end();
        ++first) {
     for (auto it = first->second.begin(); it != first->second.end(); ++it) {
-      size_t pos = expression.find(*it);
-      if (pos != string::npos) {
+      while (expression.find(*it) != string::npos) {
+        size_t pos = expression.find(*it);
         string replace;
         if (is_double(first->first)) {
           replace = "d";
@@ -58,7 +62,7 @@ string handler_data::replase_var_to_type(const string &line,
         } else {
           replace = first->first;
         }
-        expression.replace(pos, it->size(), first->first);
+        expression.replace(pos, replace.size(), replace);
       }
     }
   }
@@ -80,7 +84,7 @@ bool handler_data::is_int(const string &type) {
       "int",          "short",          "long",          "long long",
       "unsigned int", "unsigned short", "unsigned long", "unsigned long long",
       "char",         "unsigned char",  "signed char",   "bool",
-      "wchar_t"};
+      "wchar_t",      "size_t"};
   for (auto &it : double_type) {
     if (type == it) {
       return true;
@@ -105,7 +109,6 @@ bool handler_data::validate_brackets(const string &line) {
       stack.push(line[i]);
     } else if (line[i] == ')') {
       if (stack.empty()) {
-
         return false;
       }
       stack.pop();
@@ -124,26 +127,33 @@ bool handler_data::validate_operator(const string &line) {
   try {
 
     for (size_t i = 0; i < line.length(); ++i) {
-        string temp = "";
+      string temp = "";
       if (is_type(line[i])) {
         continue;
       }
-      if (line[i] != line.length() - 1 &&
+      if (i != line.length() - 1 &&
           (is_string_in_set(operators_uno, line[i]) &&
            (line[i + 1] == '(' || is_type(line[i + 1])))) {
         continue;
-      } else if (line[i] != line.length() - 1 &&
-                 (is_string_in_set(operators_bin,  line[i])) &&
-                  (is_type(line[i + 1]) || line[i + 1] == '(')) {
+      } else if (i != line.length() - 1 &&
+                 (is_string_in_set(operators_bin, line[i])) &&
+                 (is_type(line[i + 1]) || line[i + 1] == '(')) {
         continue;
-      } else if (line[i] != line.length() - 1 &&
-                 (is_string_in_set(operators_bin,  (temp += line[i] , temp += line[i+1]))) &&
+      } else if (i != line.length() - 1 &&
+                 (is_string_in_set(operators_bin,
+                                   (temp += line[i], temp += line[i + 1]))) &&
                  (is_type(line[i + 2]) || line[i + 2] == '(')) {
         continue;
-      } else if(i == line.length() - 1  &&
-      (is_string_in_set(operators_bin, line[i])|| is_string_in_set(operators_uno, line[i]))){
-          return false;
-      }else {
+      } else if (i != line.length() - 1 && line[i] == '(' && !is_string_in_set(operators_bin, line[i + 1])) {
+        continue;
+      } else if (i != 0 && line[i] == ')'&& !is_string_in_set(operators_bin, line[i - 1])) {
+        continue;
+      } else if (i == line.length() - 1 &&
+                 (is_string_in_set(operators_bin, line[i]) ||
+                  is_string_in_set(operators_uno, line[i]))) {
+        return false;
+      } else {
+
         return false;
       }
     }
@@ -154,7 +164,24 @@ bool handler_data::validate_operator(const string &line) {
 }
 
 bool handler_data::is_type(const char &c) {
-  if (c == 'u' || c == 'd' || c == 'p' || isdigit(c) || c == '.')
+  if (c == 'i' || c == 'd' || c == 'p' || isdigit(c) || c == '.')
     return true;
   return false;
+}
+
+void handler_data::replace_uno_minus(string &line) {
+    std::set<std::string> operators = {"+",  "-",  "*",  "/",  "%",  "&",
+                                           "|",  "^",  "<<", ">>", "&&", "||",
+                                           "==", "!=", "<",  ">",  "<=", ">=", "(", ")", "!", "~"};
+    for (int i = 0; i < line.size(); i++) {
+        if (line[i] == '-' && i == 0) {
+            line[i] = ' ';
+        } else if (i != 0 && line[i] == '-' && is_string_in_set(operators, line[i - 1])) {
+            line[i] = ' ';
+        } else if (line[i] == '+' && i == 0) {
+            line[i] = ' ';
+        } else if (i != 0 && line[i] == ' ' && is_string_in_set(operators, line[i - 1])) {
+            line[i] = ' ';
+        }
+    }
 }
