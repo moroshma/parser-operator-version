@@ -104,32 +104,32 @@ bool handler_data::check_postfix(const string &postfix) {
         st.pop();
 
         if (tk == "^" || tk == "&" || tk == "|" || tk == "%") {
-          if (first == "d" || second == "d" || first == "p" || second == "p") {
+          if (first == "]" || second == "]" || first == "@" || second == "@") {//d d p p
             return false;
           } else {
-            st.emplace("i");
+            st.emplace("[");//i
           }
         } else {
 
-          if (first == "d" || second == "d") {
-            st.emplace("d");
-          } else if (first == "i" || second == "i") {
-            st.emplace("i");
+          if (first == "]" || second == "]") {//d
+            st.emplace("]");//d
+          } else if (first == "[" || second == "[") {//i
+            st.emplace("["); //i
           } else {
             return false;
           }
         }
       } else if (tk[0] == '!') {
         st.pop();
-        st.emplace("i");
+        st.emplace("[");//i
       } else if (tk[0] == '~') {
-        if (tk == "p") {
+        if (tk == "@") {//p
           return false;
         }
       } else {
         st.pop();
         st.pop();
-        st.emplace("i");
+        st.emplace("[");//i
       }
     }
     if (st.size() > 1) {
@@ -177,13 +177,13 @@ bool handler_data::validate_type(const string &line, variable_types &vt) {
     while (iss >> tk) {
       if (is_type(tk[0])) {
         if (isDouble(tk)) {
-          postfix += "d";
+          postfix += "]";//d
         } else if (isdigit(tk[0]) || tk[0] == 'i') {
-          postfix += "i";
-        } else if (tk[0] == 'd') {
-          postfix += "d";
+          postfix += "[";//i
+        } else if (tk[0] == ']') {//d
+          postfix += "]";//d
         } else {
-          postfix += "p";
+          postfix += "@";//p
         }
         postfix += ' ';
       } else if (tk == "(") {
@@ -233,11 +233,11 @@ string handler_data::replase_var_to_type(const string &line,
         size_t pos = expression.find(*it);
         string replace;
         if (is_double(first->first)) {
-          replace = "d";
+          replace = "]"; // d
         } else if (is_int(first->first)) {
-          replace = "i";
+          replace = "[";//i
         } else if (is_pointer(first->first)) {
-          replace = "p";
+          replace = "@";//p
         } else {
           replace = first->first;
         }
@@ -347,7 +347,7 @@ bool handler_data::validate_operator(const string &line) {
 }
 
 bool handler_data::is_type(const char &c) {
-  if (c == 'i' || c == 'd' || c == 'p' || isdigit(c) || c == '.')
+  if (c == '[' || c == ']' || c == '@' || isdigit(c) || c == '.')
     return true;
   return false;
 }

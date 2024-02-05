@@ -135,5 +135,7 @@ public:
   bool is_bin_operator(const string &st);
   int get_priority(const string &op);
 };
-
+// [ - integer
+// ] - double
+// @ pinter
 #endif // PARSER_OPERATOR_VERSION_MAIN_H
