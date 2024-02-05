@@ -1,0 +1,7 @@
+int main() {
+
+    double x = 5;
+    int n = (x % 2);
+
+    bool Geek;
+}
