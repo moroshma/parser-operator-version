@@ -1,9 +1,5 @@
 #include "./main.hpp"
 
-// TODO: add parser var with = handler
-// TODO: add parser polish notation
-// TODO: add validation of the variable
-// TODO: add comments skip handler
 
 int base_type::get_type(const string &name_file) {
   int ret = Error::SUCCESS;
@@ -32,6 +28,10 @@ int handler_data::read_file(const string &name_file, variable_types &vt) {
   while (std::getline(file, line)) {
     if (!line.empty() && line.back() == '\n') {
       line.pop_back();
+    }
+    line = trim(line, " ");
+    if (line.size() >= 2 && line[0] == '/' && line[1] == '/'){
+        continue;
     }
     find_variable(line, vt);
     this->iter_line();

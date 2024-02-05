@@ -2,6 +2,7 @@ int main() {
 
     double x = 5;
     int n = (x + 2) ^ 1;
+    // int n = (sfa)
 
     bool Geek;
 }
