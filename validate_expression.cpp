@@ -170,12 +170,7 @@ bool handler_data::validate_type(const string &line, variable_types &vt) {
   std::istringstream iss(expression);
   std::string tk;
 
-  // TODO: написать проверку на унарный и бинарный оператор и доделать польскую
-  // нотацию для проверки типов
-  //  2. Проверка на унарный оператор
-  //  1. Проверка на бинарный оператор
-  //  3. Проверка на тип переменной
-  //  4. проверка на правильность операций
+
   string postfix;
   try {
 
