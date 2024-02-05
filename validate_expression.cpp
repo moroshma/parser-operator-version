@@ -326,28 +326,28 @@ bool handler_data::validate_operator(const string &line) {
         continue;
       }
         if (i != line.length() - 1 &&
-            (is_string_in_set(operators_bin,
-                              (temp += line[i], temp += line[i + 1]))) &&
+            (is_string_in_container(operators_bin,
+                                    (temp += line[i], temp += line[i + 1]))) &&
             (is_type(line[i + 2]) || line[i + 2] == '(')) {
             i++;
             continue;
         } else if (i != line.length() - 1 &&
-          (is_string_in_set(operators_uno, line[i]) &&
+          (is_string_in_container(operators_uno, line[i]) &&
            (line[i + 1] == '(' || is_type(line[i + 1])))) {
         continue;
       } else if (i != line.length() - 1 &&
-                 (is_string_in_set(operators_bin, line[i])) &&
+                 (is_string_in_container(operators_bin, line[i])) &&
                  (is_type(line[i + 1]) || line[i + 1] == '(')) {
         continue;
       } else  if (i != line.length() - 1 && line[i] == '(' &&
-                 !is_string_in_set(operators_bin, line[i + 1])) {
+                 !is_string_in_container(operators_bin, line[i + 1])) {
         continue;
       } else if (i != 0 && line[i] == ')' &&
-                 !is_string_in_set(operators_bin, line[i - 1])) {
+                 !is_string_in_container(operators_bin, line[i - 1])) {
         continue;
       } else if (i == line.length() - 1 &&
-                 (is_string_in_set(operators_bin, line[i]) ||
-                  is_string_in_set(operators_uno, line[i]))) {
+                 (is_string_in_container(operators_bin, line[i]) ||
+                  is_string_in_container(operators_uno, line[i]))) {
         return false;
       } else {
 
@@ -384,13 +384,13 @@ void handler_data::replace_uno_minus(string &line) {
   for (int i = 0; i < line.size(); i++) {
     if (line[i] == '-' && i == 0) {
       line[i] = ' ';
-    } else if (i != 0 && i != line.size()  && line[i] == '-' &&
-               is_string_in_set(operators, line[i - 1])) {
+    } else if (i != 0 && i != line.size() && line[i] == '-' &&
+            is_string_in_container(operators, line[i - 1])) {
       line[i] = ' ';
     } else if (line[i] == '+' && i == 0) {
       line[i] = ' ';
     } else if (i != 0 && line[i] == ' ' &&
-               is_string_in_set(operators, line[i - 1])&& i != line.size()) {
+            is_string_in_container(operators, line[i - 1]) && i != line.size()) {
       line[i] = ' ';
     }
   }

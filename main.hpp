@@ -117,17 +117,17 @@ public:
         this->cur_line++;
     }
 
-    static bool is_string_in_set(const std::set<std::string> &set, const std::string &str) {
+    static bool is_string_in_container(const std::set<std::string> &set, const std::string &str) {
         return set.find(str) != set.end();
     }
-    static bool is_string_in_set(const std::vector<std::string> &vec, const std::string &str) {
+    static bool is_string_in_container(const std::vector<std::string> &vec, const std::string &str) {
         return std::find(vec.begin(), vec.end(), str) != vec.end();
     }
-    static bool is_string_in_set(const std::vector<std::string> &vec, const char & ch) {
+    static bool is_string_in_container(const std::vector<std::string> &vec, const char & ch) {
         return std::find(vec.begin(), vec.end(), string(1, ch)) != vec.end();
     }
 
-    static bool is_string_in_set(const std::set<std::string> &set, const char &ch) {
+    static bool is_string_in_container(const std::set<std::string> &set, const char &ch) {
         return set.find(string(1, ch)) != set.end();
     }
 
